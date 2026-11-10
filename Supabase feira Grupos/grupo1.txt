@@ -1,0 +1,756 @@
+
+https://ptcclyrlrliepenvszfo.supabase.co
+
+
+Publishable Key:
+sb_publishable_6rKD9Rqi6LDnrg0c3Bdrpg_pzX2Fo8j
+
+
+# GRUPO 1 — LANDING PAGE E CADASTRO DE VISITANTES
+
+## 1. OBJETIVO
+
+Crie uma aplicação web responsiva para a Landing Page de um evento escolar.
+
+Esta aplicação será o **Grupo 1** de um sistema maior de eventos composto por quatro aplicações independentes:
+
+1. Landing Page e Cadastro
+2. Credenciamento
+3. Leitor de QR Code
+4. Dashboard
+
+IMPORTANTE:
+
+* Este projeto é SOMENTE o Grupo 1.
+* Não criar telas de credenciamento.
+* Não criar leitor de QR Code.
+* Não criar dashboard administrativo.
+* Não criar gerenciamento de grupos.
+* Não criar telas para visualizar visitantes cadastrados.
+* Não permitir que visitantes consultem dados de outros visitantes.
+* O projeto utiliza o mesmo banco Supabase dos demais projetos.
+* O acesso aos dados deve respeitar rigorosamente o RLS existente no Supabase.
+
+---
+
+# 2. TECNOLOGIAS
+
+Utilize:
+
+* React
+* TypeScript
+* Vite
+* Supabase
+* Tailwind CSS
+* componentes modernos e responsivos
+* biblioteca de ícones, como Lucide
+* validação de formulários
+* QR Code NÃO é necessário nesta aplicação
+
+Utilize o cliente oficial do Supabase.
+
+As variáveis de ambiente serão:
+
+VITE_SUPABASE_URL
+
+VITE_SUPABASE_PUBLISHABLE_KEY
+
+Não solicitar nem utilizar:
+
+* service_role key
+* senha do banco
+* chave administrativa
+
+Nunca colocar credenciais administrativas no frontend.
+
+---
+
+# 3. SUPABASE
+
+O projeto Supabase já possui a estrutura de banco.
+
+O projeto utiliza as seguintes tabelas:
+
+## eventos
+
+Campos principais:
+
+* id
+* nome
+* descricao
+* data_inicio
+* data_fim
+* ativo
+* created_at
+
+## visitantes
+
+Campos:
+
+* id
+* evento_id
+* nome
+* cpf
+* email
+* telefone
+* cidade
+* grupo_id
+* credenciado
+* created_at
+* updated_at
+
+O visitante NÃO deve escolher o grupo.
+
+O grupo será atribuído posteriormente pela equipe de credenciamento.
+
+## grupos
+
+Campos:
+
+* id
+* evento_id
+* nome
+* descricao
+* created_at
+
+A Landing Page NÃO deve permitir acesso ou alteração dos grupos.
+
+---
+
+# 4. EVENTO
+
+A aplicação deve trabalhar com eventos cadastrados na tabela:
+
+eventos
+
+Somente eventos com:
+
+ativo = true
+
+devem ser considerados disponíveis.
+
+Ao abrir a aplicação, localizar o evento ativo.
+
+Se existir apenas um evento ativo, utilizá-lo automaticamente.
+
+Se houver mais de um evento ativo, criar uma seleção de evento somente se necessário.
+
+Preferencialmente utilizar o evento ativo correspondente ao período atual.
+
+Não permitir que o visitante altere diretamente o ID do evento.
+
+---
+
+# 5. LANDING PAGE
+
+Criar uma Landing Page moderna, profissional e responsiva.
+
+A página deve funcionar perfeitamente em:
+
+* computador
+* notebook
+* tablet
+* celular
+
+Estrutura sugerida:
+
+## HEADER
+
+Exibir:
+
+* logotipo da escola/evento
+* nome do evento
+* menu simples
+
+Menu:
+
+* Início
+* Evento
+* Inscrição
+
+No celular transformar o menu em menu hambúrguer.
+
+---
+
+# 6. HERO
+
+Criar uma seção principal destacando o evento.
+
+Exemplo de conteúdo:
+
+"Bem-vindo ao nosso evento!"
+
+"Faça seu cadastro para participar."
+
+Adicionar:
+
+* título grande
+* subtítulo
+* imagem ou área visual relacionada ao evento
+* botão "Quero me inscrever"
+
+O botão deve levar o visitante para o formulário.
+
+---
+
+# 7. SOBRE O EVENTO
+
+Criar uma seção explicando o evento.
+
+Utilizar os dados existentes na tabela eventos quando disponíveis:
+
+* nome
+* descricao
+* data_inicio
+* data_fim
+
+Formatar as datas para o padrão brasileiro:
+
+DD/MM/YYYY
+
+---
+
+# 8. FORMULÁRIO DE INSCRIÇÃO
+
+Criar formulário com os campos:
+
+### Nome completo
+
+Campo obrigatório.
+
+Regras:
+
+* mínimo de 3 caracteres
+* remover espaços desnecessários
+* não aceitar nome vazio
+
+### CPF
+
+Campo obrigatório.
+
+Exibir máscara:
+
+000.000.000-00
+
+Internamente salvar somente números.
+
+Exemplo:
+
+Entrada:
+
+123.456.789-09
+
+Banco:
+
+12345678909
+
+### E-mail
+
+Campo obrigatório.
+
+Validar formato de e-mail.
+
+### Telefone
+
+Campo opcional.
+
+Utilizar máscara apropriada para telefone brasileiro.
+
+### Cidade
+
+Campo opcional.
+
+---
+
+# 9. VALIDAÇÃO DE CPF
+
+Implementar validação real do CPF no frontend.
+
+O CPF deve:
+
+* possuir 11 dígitos
+* passar pela validação dos dígitos verificadores
+* rejeitar sequências inválidas como:
+
+00000000000
+11111111111
+22222222222
+33333333333
+44444444444
+55555555555
+66666666666
+77777777777
+88888888888
+99999999999
+
+Mostrar mensagem amigável:
+
+"Digite um CPF válido."
+
+Não enviar CPF inválido para o Supabase.
+
+---
+
+# 10. CADASTRO NO SUPABASE
+
+Para realizar o cadastro, utilizar preferencialmente a função existente:
+
+public.cadastrar_visitante
+
+Parâmetros:
+
+p_evento_id
+p_nome
+p_cpf
+p_email
+p_telefone
+p_cidade
+
+Não fazer INSERT direto na tabela visitantes se a função estiver disponível.
+
+Utilizar a função RPC do Supabase.
+
+Exemplo conceitual:
+
+supabase.rpc("cadastrar_visitante", {
+p_evento_id: eventoId,
+p_nome: nome,
+p_cpf: cpf,
+p_email: email,
+p_telefone: telefone,
+p_cidade: cidade
+})
+
+---
+
+# 11. CPF DUPLICADO
+
+O banco já possui uma restrição:
+
+unique(evento_id, cpf)
+
+Portanto, se o CPF já estiver cadastrado no mesmo evento, não criar outro cadastro.
+
+Mostrar mensagem:
+
+"Este CPF já está cadastrado para este evento."
+
+Não mostrar dados do visitante já cadastrado.
+
+Não permitir consulta de dados existentes.
+
+---
+
+# 12. SEGURANÇA
+
+Esta é uma parte extremamente importante.
+
+A Landing Page é pública.
+
+O visitante NÃO pode:
+
+* consultar a lista de visitantes
+* consultar outros CPFs
+* consultar grupos
+* consultar QR Codes
+* consultar leituras
+* consultar o dashboard
+* alterar visitantes
+* excluir visitantes
+* consultar dados administrativos
+
+O frontend deve utilizar apenas:
+
+public.cadastrar_visitante
+
+para realizar o cadastro.
+
+Não criar consultas como:
+
+supabase.from("visitantes").select("*")
+
+na Landing Page.
+
+Não criar acesso público a:
+
+qr_codes
+
+leituras
+
+grupos
+
+perfis
+
+dashboard_resumo
+
+dashboard_por_grupo
+
+dashboard_por_local
+
+---
+
+# 13. MENSAGEM DE SUCESSO
+
+Após o cadastro realizado com sucesso:
+
+Esconder ou limpar o formulário.
+
+Mostrar uma tela de confirmação.
+
+Exemplo:
+
+"Inscrição realizada com sucesso!"
+
+"Seu cadastro foi registrado para o evento."
+
+Adicionar um ícone visual de sucesso.
+
+Não mostrar informações administrativas.
+
+Não mostrar o grupo.
+
+Não mostrar QR Code.
+
+Não mostrar ID interno do visitante.
+
+---
+
+# 14. BOTÃO DE NOVO CADASTRO
+
+Na tela de sucesso, disponibilizar:
+
+"Voltar"
+
+ou
+
+"Realizar novo cadastro"
+
+Ao clicar:
+
+* limpar os dados
+* retornar ao formulário
+
+---
+
+# 15. EXPERIÊNCIA DO USUÁRIO
+
+Durante o envio:
+
+O botão deve ficar desabilitado.
+
+Mostrar:
+
+"Cadastrando..."
+
+Evitar que o usuário clique várias vezes.
+
+Depois da resposta do Supabase:
+
+* sucesso → tela de confirmação
+* erro → mensagem amigável
+
+Nunca mostrar mensagens técnicas do PostgreSQL diretamente para o usuário.
+
+---
+
+# 16. TRATAMENTO DE ERROS
+
+Criar tratamento para:
+
+### CPF inválido
+
+"Digite um CPF válido."
+
+### CPF já cadastrado
+
+"Este CPF já está cadastrado para este evento."
+
+### Nome inválido
+
+"Digite seu nome completo."
+
+### E-mail inválido
+
+"Digite um e-mail válido."
+
+### Evento indisponível
+
+"No momento, as inscrições estão encerradas."
+
+### Erro de conexão
+
+"Não foi possível realizar o cadastro. Verifique sua conexão e tente novamente."
+
+### Erro inesperado
+
+"Não foi possível concluir sua inscrição. Tente novamente."
+
+Registrar detalhes técnicos somente no console em ambiente de desenvolvimento.
+
+Nunca exibir SQL ou detalhes internos ao visitante.
+
+---
+
+# 17. DESIGN
+
+Criar visual profissional com aparência de evento escolar.
+
+Priorizar:
+
+* layout limpo
+* boa hierarquia visual
+* cartões
+* bordas arredondadas
+* sombras discretas
+* animações suaves
+* botões grandes
+* excelente experiência mobile
+
+O formulário deve ser fácil de usar em celular.
+
+Utilizar boa acessibilidade:
+
+* labels nos campos
+* contraste adequado
+* foco visível
+* mensagens de erro próximas dos campos
+* navegação por teclado
+
+---
+
+# 18. RESPONSIVIDADE
+
+No celular:
+
+* formulário em uma coluna
+* botões ocupando boa parte da largura
+* campos grandes para toque
+* menu adaptado
+* textos ajustados
+
+No desktop:
+
+* hero em duas colunas quando apropriado
+* formulário centralizado
+* largura máxima confortável
+
+---
+
+# 19. ESTRUTURA DO PROJETO
+
+Organizar o código de forma profissional.
+
+Sugestão:
+
+src/
+
+components/
+
+Header.tsx
+Hero.tsx
+EventInfo.tsx
+RegistrationForm.tsx
+SuccessMessage.tsx
+Footer.tsx
+
+lib/
+
+supabase.ts
+cpf.ts
+validation.ts
+
+pages/
+
+Home.tsx
+
+types/
+
+database.ts
+
+Não criar arquivos desnecessários.
+
+---
+
+# 20. CLIENTE SUPABASE
+
+Criar:
+
+src/lib/supabase.ts
+
+Utilizar:
+
+VITE_SUPABASE_URL
+
+VITE_SUPABASE_PUBLISHABLE_KEY
+
+Não utilizar service_role.
+
+Exemplo conceitual:
+
+createClient(
+import.meta.env.VITE_SUPABASE_URL,
+import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+)
+
+---
+
+# 21. FLUXO COMPLETO
+
+O fluxo deve ser:
+
+Visitante acessa a Landing Page
+
+↓
+
+Sistema identifica o evento ativo
+
+↓
+
+Visitante visualiza informações do evento
+
+↓
+
+Clica em "Quero me inscrever"
+
+↓
+
+Preenche:
+
+Nome
+CPF
+E-mail
+Telefone
+Cidade
+
+↓
+
+Frontend valida os campos
+
+↓
+
+Frontend valida CPF
+
+↓
+
+CPF é normalizado
+
+↓
+
+Aplicação chama:
+
+public.cadastrar_visitante
+
+↓
+
+Supabase valida o cadastro
+
+↓
+
+Se sucesso:
+
+Tela de confirmação
+
+Se CPF duplicado:
+
+Mensagem de CPF já cadastrado
+
+Se erro:
+
+Mensagem amigável
+
+---
+
+# 22. NÃO IMPLEMENTAR
+
+NÃO implementar neste projeto:
+
+* login administrativo
+* painel administrativo
+* dashboard
+* credenciamento
+* leitor de QR Code
+* câmera
+* geração de QR Code
+* associação de QR Code
+* seleção de grupo pelo visitante
+* alteração de grupo
+* histórico de leituras
+* percurso
+* relatórios
+* exportação de dados
+* gerenciamento de usuários
+* tela de visitantes cadastrados
+
+Essas funcionalidades pertencem aos outros grupos.
+
+---
+
+# 23. COMPATIBILIDADE COM OS OUTROS PROJETOS
+
+Este projeto compartilha o mesmo banco Supabase com:
+
+GRUPO 2 — Credenciamento
+
+GRUPO 3 — Leitor QR
+
+GRUPO 4 — Dashboard
+
+Portanto:
+
+NÃO modificar o schema existente.
+
+NÃO alterar tabelas.
+
+NÃO alterar políticas RLS.
+
+NÃO excluir dados.
+
+NÃO criar tabelas duplicadas.
+
+NÃO criar outro banco Supabase.
+
+Utilizar exatamente o banco já configurado.
+
+---
+
+# 24. RESULTADO ESPERADO
+
+Ao finalizar, quero uma Landing Page completa e pronta para produção, contendo:
+
+* página inicial
+* informações do evento
+* formulário de inscrição
+* validação de CPF
+* validação de e-mail
+* máscaras
+* integração real com Supabase
+* cadastro através da RPC cadastrar_visitante
+* tratamento de CPF duplicado
+* tela de sucesso
+* tratamento de erros
+* design responsivo
+* acessibilidade
+* segurança
+
+Antes de finalizar, verifique se:
+
+1. O projeto compila sem erros.
+2. A conexão com Supabase está funcionando.
+3. A função cadastrar_visitante está sendo chamada corretamente.
+4. O CPF é salvo sem máscara.
+5. O evento ativo é identificado corretamente.
+6. O visitante não consegue consultar dados administrativos.
+7. Nenhuma service_role key está presente no frontend.
+8. Não foram criadas tabelas ou estruturas duplicadas.
+9. O formulário funciona em celular.
+10. O cadastro duplicado é tratado corretamente.
+
+IMPORTANTE:
+
+Não invente novas tabelas.
+
+Não altere o banco existente.
+
+Não implemente funcionalidades dos Grupos 2, 3 ou 4.
+
+Este projeto deve ser exclusivamente a aplicação de Landing Page e Cadastro do sistema integrado.
